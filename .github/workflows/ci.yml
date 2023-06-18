@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/gradle-build-action@v2.4.2
+        with:
+          arguments: assemble
+      - id: test_without_agent
+        name: Test without Java Agent
+        run: ./gradlew test
+        continue-on-error: true
+      - name: Expect failure or exit
+        if: steps.test_without_agent.outcome != 'failure'
+        run: exit 1
+      - id: test_with_agent
+        name: Test with Java Agent
+        run: ./gradlew test -Pjava_agent=true
