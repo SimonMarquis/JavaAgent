@@ -16,6 +16,8 @@ tasks.jar {
     manifest {
         attributes("Premain-Class" to "Agent")
     }
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
 }
 
 tasks.test {
